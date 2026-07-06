@@ -13,7 +13,7 @@ public class TeacherController : ControllerBase
         _authService = authService;
     }
 
-    //// ✅ Teacher Signup
+    //// Bahadur✅ Teacher Signup
     //[HttpPost("register")]
     //[AllowAnonymous]
     //public async Task<IActionResult> RegisterTeacher([FromBody] User user)
