@@ -76,7 +76,7 @@ public class AdminController : ControllerBase
             return Ok(new
             {
                 success = false,
-                message = "User already registered"
+                message = "Teacher already registered"
             });
         }
 
