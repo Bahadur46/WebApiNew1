@@ -5,7 +5,7 @@ on:
     branches:
       - master
 env:
-  AZURE_WEBAPP_NAME: bbcsinter
+  AZURE_WEBAPP_NAME: bahadur2125
   DOTNET_VERSION: '9.0.x'
   BUILD_CONFIGURATION: Release
 
