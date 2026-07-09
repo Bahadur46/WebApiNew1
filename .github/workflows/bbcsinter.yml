@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
 env:
   AZURE_WEBAPP_NAME: bbcsinter
   DOTNET_VERSION: '9.0.x'
