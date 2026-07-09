@@ -107,7 +107,7 @@ public class AdminController : ControllerBase
             return Ok(new
             {
                 success = true,
-                message = "Teacher registered successfully",
+                message = "Teacher bahadur registered successfully",
                 data = new
                 {
                     user_id = model.TeacherId,
