@@ -1,29 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+
 using System.Security.Claims;
 using System.Text;
 using WebApiNew.Comman;
 using WebApiNew.Repository;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// =======================================================
-// Controllers (NO auto validation)
-// =======================================================
+// Controllers
 builder.Services.AddControllers();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    // Disable automatic model validation (Required ignore hoga)
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// =======================================================
-// MongoDB Dependency Injection
-// =======================================================
-builder.Services.AddSingleton<UserRepository>(sp =>
+// MongoDB
+builder.Services.AddSingleton(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     return new UserRepository(configuration);
@@ -31,9 +27,7 @@ builder.Services.AddSingleton<UserRepository>(sp =>
 
 builder.Services.AddSingleton<AuthService>();
 
-// =======================================================
-// JWT Authentication Configuration
-// =======================================================
+// JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -65,43 +59,62 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// =======================================================
-// Authorization Policies
-// =======================================================
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("AdminOnly", policy =>
-//        policy.RequireRole("Admin"));
-//});
-
-// =======================================================
-// Swagger (Optional but recommended)
-// =======================================================
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "WebApiNew API",
+        Version = "v1"
+    });
 
-// =======================================================
-// Build App
-// =======================================================
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter JWT token only",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    //c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new BaseOpenApiReference
+    //            {
+    //                Type = ReferenceType.SecurityScheme,
+    //                Id = "Bearer"
+    //            }
+    //        },
+    //        Array.Empty<string>()
+    //    }
+    //});
+});
+
 var app = builder.Build();
 
-// =======================================================
-// Middleware Pipeline
-// =======================================================
-if (app.Environment.IsDevelopment())
+// Swagger
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiNew API V1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.UseMiddleware<ApiPerformanceMiddleware>();
+
 app.MapControllers();
 
-// =======================================================
-// Run Application
-// =======================================================
 app.Run();
