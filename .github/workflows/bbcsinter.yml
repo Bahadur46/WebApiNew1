@@ -3,7 +3,7 @@ name: Build and Deploy .NET 9 Web API
 on:
   push:
     branches:
-      - master
+      - master 
 env:
   AZURE_WEBAPP_NAME: bahadur2125
   DOTNET_VERSION: '9.0.x'
